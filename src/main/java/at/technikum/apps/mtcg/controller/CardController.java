@@ -33,7 +33,7 @@ public class CardController extends AbstractController {
             }
 
             // THOUGHT: better 405
-            return status(HttpStatus.NOT_ALLOWED);
+            return notAllowed(HttpStatus.NOT_ALLOWED);
         }
 
         // get id e.g. from /tasks/1
@@ -47,7 +47,7 @@ public class CardController extends AbstractController {
         }
 
         // THOUGHT: better 405
-        return status(HttpStatus.NOT_ALLOWED);
+        return notAllowed(HttpStatus.NOT_ALLOWED);
     }
 
     public Response create(Request request) {

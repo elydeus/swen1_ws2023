@@ -10,6 +10,7 @@ public class Request {
 
     private String host;
 
+    private String httpHeader;
     // application/json, text/plain
     private String contentType;
 
@@ -65,5 +66,13 @@ public class Request {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public String getHttpHeader() {
+        return httpHeader;
+    }
+
+    public void setHttpHeader(String httpHeader) {
+        this.httpHeader = httpHeader;
     }
 }
