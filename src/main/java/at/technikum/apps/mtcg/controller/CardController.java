@@ -33,7 +33,7 @@ public class CardController extends AbstractController {
             }
 
             // THOUGHT: better 405
-            return status(HttpStatus.BAD_REQUEST);
+            return status(HttpStatus.NOT_ALLOWED);
         }
 
         // get id e.g. from /tasks/1
@@ -47,7 +47,7 @@ public class CardController extends AbstractController {
         }
 
         // THOUGHT: better 405
-        return status(HttpStatus.BAD_REQUEST);
+        return status(HttpStatus.NOT_ALLOWED);
     }
 
     public Response create(Request request) {
@@ -71,15 +71,7 @@ public class CardController extends AbstractController {
             throw new RuntimeException(e);
         }
 
-        Response response = new Response();
-        // THOUGHT: better status 201 Created
-        response.setStatus(HttpStatus.OK);
-        response.setContentType(ContentType.APPLICATION_JSON);
-        response.setBody(cardJson);
-
-        return response;
-
-        // return json(task);
+       return json(HttpStatus.CREATED, cardJson);
     }
 
     public Response readAll(Request request) {
@@ -92,17 +84,7 @@ public class CardController extends AbstractController {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
-
-        // Object to JSON coming soon
-
-        Response response = new Response();
-        // THOUGHT: better status 201 Created
-        response.setStatus(HttpStatus.OK);
-        response.setContentType(ContentType.APPLICATION_JSON);
-        response.setBody(cardJson);
-
-        return response;
+        return json(HttpStatus.CREATED, cardJson);
     }
 
     public Response read(int id, Request request) {
