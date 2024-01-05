@@ -26,7 +26,7 @@ public class Request {
 
     public void setMethod(HttpMethod httpMethod) {
         this.method = httpMethod.getMethod();
-    }
+    } //speichert noch den String (nicht HttpMethod Obj)
 
     public String getRoute() {
         return route;

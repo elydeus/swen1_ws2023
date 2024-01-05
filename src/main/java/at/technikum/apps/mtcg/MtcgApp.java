@@ -15,9 +15,10 @@ public class MtcgApp implements ServerApplication {
     private List<AbstractController> controllers = new ArrayList<>();
 
     public MtcgApp() {
-
+        controllers.add(new SessionController());
         controllers.add(new UserController());
         controllers.add(new CardController());
+        controllers.add(new PackageController());
     }
 
     @Override

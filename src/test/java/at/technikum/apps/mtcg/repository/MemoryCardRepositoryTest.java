@@ -17,8 +17,7 @@ class MemoryCardRepositoryTest {
         Card card = new Card(
                 "1234-1234",
                 "Venom",
-                "schwarzer Typ",
-                false
+                "schwarzer Typ"
         );
 
         //Act
