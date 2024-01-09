@@ -13,8 +13,8 @@ import java.util.Optional;
 
 public class DatabaseCardRepository implements CardRepository {
 
-    private final String FIND_ALL_SQL = "SELECT * FROM card";
-    private final String SAVE_SQL = "INSERT INTO card(id, name, damage, package_id) VALUES(?, ?, ?, ?)";
+    private final String FIND_ALL_SQL = "SELECT * FROM cards";
+    private final String SAVE_SQL = "INSERT INTO cards(id, name, damage, package_id) VALUES(?, ?, ?, ?)";
 
     private final Database database = Database.getInstance();
 

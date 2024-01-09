@@ -1,11 +1,28 @@
 package at.technikum.apps.mtcg.controller;
 
+import at.technikum.apps.mtcg.service.PackageService;
+import at.technikum.apps.mtcg.service.SessionService;
+import at.technikum.apps.mtcg.service.StackService;
 import at.technikum.server.http.ContentType;
 import at.technikum.server.http.HttpStatus;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
 
-public class TransactionController implements Controller{
+import java.util.List;
+
+public class TransactionController extends AbstractController{
+
+    private final SessionService sessionService;
+
+    private final PackageService packageService;
+
+    private final StackService stackService;
+
+    public TransactionController() {
+        this.sessionService = new SessionService();
+        this.packageService = new PackageService();
+        this.stackService = new StackService();
+    }
 
     @Override
     public boolean supports(String route) {
@@ -14,11 +31,52 @@ public class TransactionController implements Controller{
 
     @Override
     public Response handle(Request request) {
-        Response response = new Response();
-        response.setStatus(HttpStatus.OK);
-        response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody("transaction controller");
-
-        return response;
+        if (supports(request.getRoute())) {
+            if (request.getMethod().equals("POST")) {
+                return buyPackage(request);
+            }
+            return notAllowed(HttpStatus.NOT_ALLOWED);
+        }
+        return notAllowed(HttpStatus.NOT_ALLOWED);
     }
+
+    public Response buyPackage(Request request){
+
+        if(request.getContentType().equals("application/json")){
+            String token= request.getHttpHeader();
+            String username = extractUser(token);
+            token = token.split(" ")[1];
+
+            if(sessionService.isLoggedIn(token)){
+                int costs = 5;
+                int user_coins = packageService.getCoinsFromUser(username);
+
+                if(user_coins >= costs){
+
+                    String user_id = packageService.getIdFromUser(username);
+                    String package_id = packageService.getIdFromPackage();
+
+                    if(package_id == null){
+                        return json(HttpStatus.NOT_FOUND, "No more packages available for purchase!");
+                    }
+                    List<String> cardsInPackage = packageService.getCardsFromPackage(package_id);
+
+                    for (String card_id : cardsInPackage){
+                        stackService.saveCardsIntoStack(user_id, card_id);
+                    }
+
+                    packageService.updateCoins(username, costs);
+                    packageService.delete(package_id);
+
+                    return ok(HttpStatus.OK);
+                }else{
+                    return badRequest(HttpStatus.BAD_REQUEST);
+                }
+            }else{
+                return notAllowed(HttpStatus.NOT_ALLOWED);
+            }
+        }
+        return badRequest(HttpStatus.BAD_REQUEST);
+    }
+
 }

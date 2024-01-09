@@ -19,8 +19,32 @@ public class PackageService {
         this.packageRepository = new DatabasePackageRepository();
     }
 
+    public void updateCoins(String username, int costs){
+        packageRepository.updateCoins(username, costs);
+    }
+    public int getCoinsFromUser(String username){
+        return packageRepository.getCoinsFromUser(username);
+    }
+
+    public String getIdFromUser(String username){
+        return packageRepository.getIdFromUser(username);
+    }
+
+    public List<String> getCardsFromPackage(String package_id){
+        return packageRepository.getCardsInPackage(package_id);
+    }
+
+
+
+    public String getIdFromPackage(){
+        return packageRepository.getIdFromPackage();
+    }
     public Set<Package> findAll() {
         return packageRepository.findAll();
+    }
+
+    public void delete(String package_id){
+        packageRepository.delete(package_id);
     }
 
     public Optional<Package> find(String id) {
