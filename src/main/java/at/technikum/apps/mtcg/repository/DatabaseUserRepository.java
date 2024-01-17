@@ -16,7 +16,7 @@ public class DatabaseUserRepository implements UserRepository {
 
     private final String FIND_BY_USERNAME = "SELECT username FROM users WHERE username = ?";
     private final String FIND_BY_USERNAME_AND_PASSWORD = "SELECT * FROM users WHERE username = ? AND password = ?";
-    private final String SAVE = "INSERT INTO users(id, username, password, elo, coins, deck_id) VALUES(?, ?, ?, ?, ?, ?)";
+    private final String SAVE = "INSERT INTO users(id, username, password, elo, coins, bio, image, name) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
     private final String UPDATE = "UPDATE users SET bio = ?, image = ?, name = ? WHERE username = ?";
     private final String GET_ELO_SQL = "SELECT elo FROM users WHERE username = ?";
     private final String GET_ALL_ELO_SQL = "SELECT elo FROM users";
@@ -58,12 +58,11 @@ public class DatabaseUserRepository implements UserRepository {
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     user = new User(
-                            rs.getString("user_id"),
+                            rs.getString("id"),
                             rs.getString("username"),
                             rs.getString("password"),
                             rs.getInt("elo"),
                             rs.getInt("coins"),
-                            rs.getString("deck_id"),
                             rs.getString("bio"),
                             rs.getString("image"),
                             rs.getString("name"));
@@ -113,7 +112,9 @@ public class DatabaseUserRepository implements UserRepository {
                             rs.getString("password"),
                             rs.getInt("elo"),
                             rs.getInt("coins"),
-                            rs.getString("deck_id"));
+                            rs.getString("bio"),
+                            rs.getString("image"),
+                            rs.getString("name"));
                 }
             }
         } catch (SQLException e) {
@@ -133,7 +134,9 @@ public class DatabaseUserRepository implements UserRepository {
             pstmt.setString(3, user.getPassword());
             pstmt.setInt(4, 100);
             pstmt.setInt(5, 20);
-            pstmt.setString(6, user.getDeckID());
+            pstmt.setString(6, user.getBio());
+            pstmt.setString(7, user.getImage());
+            pstmt.setString(8, user.getName());
 
 
             pstmt.execute();
