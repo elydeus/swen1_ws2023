@@ -20,6 +20,7 @@ public class Card {
         this(id,name, damage,null, type);
     }
 
+
     public Card(String id, String name, int damage, String packageId, String type) {
         this.id = id;
         this.name = name;

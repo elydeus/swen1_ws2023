@@ -12,7 +12,7 @@ public abstract class AbstractController {
 
     public abstract Response handle(Request request);
 
-    private SessionService sessionService = new SessionService();
+    private final SessionService sessionService = new SessionService();
 
     protected Response status(HttpStatus httpStatus) {
         Response response = new Response();

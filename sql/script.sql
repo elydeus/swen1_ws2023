@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS cards
     name       VARCHAR(255) NOT NULL,
     damage     INT,
     package_id VARCHAR(255) REFERENCES packages (id) ON DELETE SET NULL,
-    type VARCHAR(255)
+    type       VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS stacks
@@ -51,6 +51,20 @@ CREATE TABLE IF NOT EXISTS deckcards
     FOREIGN KEY (card_id) REFERENCES cards (id)
 );
 
+CREATE TABLE IF NOT EXISTS trades
+(
+    trade_id       VARCHAR(255) PRIMARY KEY,
+    dealerUserId   VARCHAR(255),
+    customerUserId VARCHAR(255),
+    dealerCardId   VARCHAR(255),
+    customerCardId VARCHAR(255),
+    status         VARCHAR(255) DEFAULT NULL,
+    FOREIGN KEY (dealerUserId) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (customerUserId) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (dealerCardId) REFERENCES cards (id) ON DELETE CASCADE,
+    FOREIGN KEY (customerCardId) REFERENCES cards (id) ON DELETE CASCADE
+);
+
 ALTER TABLE users
     ADD COLUMN bio VARCHAR(255) DEFAULT NULL;
 
@@ -60,5 +74,10 @@ ALTER TABLE users
 ALTER TABLE users
     ADD COLUMN name VARCHAR(20) DEFAULT NULL;
 
+ALTER TABLE trades
+    ADD COLUMN type VARCHAR(20);
 
-DROP TABLE cards, packages, users, stacks, decks, deckcards;
+ALTER TABLE trades
+    ADD COLUMN minDamage INT;
+
+DROP TABLE cards, packages, users, stacks, decks, deckcards, trades;

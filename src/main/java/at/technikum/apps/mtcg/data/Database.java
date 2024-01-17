@@ -12,8 +12,6 @@ public class Database {
     private static final String USERNAME = "postgres";
     private static final String PASSWORD = "postgres";
 
-    private Database(){
-    }
 
     public static Database getInstance(){
         if (instance == null){

@@ -3,6 +3,8 @@ package at.technikum.apps.mtcg.repository;
 import at.technikum.apps.mtcg.data.Database;
 import at.technikum.apps.mtcg.entity.User;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -96,9 +98,26 @@ public class DatabaseUserRepository implements UserRepository {
 
     }
 
-    public String securePassword(String password){
-        Base64.Encoder encoder = Base64.getEncoder();
-        return encoder.encodeToString(password.getBytes());
+    private String securePassword(String password) {
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");      // create instance of messageDigest for MD5 algorithm
+
+            messageDigest.update(password.getBytes());                                    // Update the digest with the bytes of the password
+
+            byte[] resultByteArray = messageDigest.digest();                              // Obtain the hash value as a byte array
+
+            StringBuilder sb = new StringBuilder();                                        // Convert the byte array to a hexadecimal string
+
+            for (byte b : resultByteArray) {
+                sb.append(String.format("%02x", b));
+            }
+
+            return sb.toString();                                                          // Return the hashed password as a hexadecimal string
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

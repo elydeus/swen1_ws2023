@@ -1,5 +1,7 @@
 package at.technikum.apps.mtcg.controller;
 
+import at.technikum.apps.mtcg.data.Database;
+import at.technikum.apps.mtcg.repository.DatabaseUserRepository;
 import at.technikum.apps.mtcg.service.SessionService;
 import at.technikum.apps.mtcg.service.UserService;
 import at.technikum.server.http.ContentType;

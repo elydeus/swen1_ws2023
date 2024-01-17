@@ -1,5 +1,6 @@
 package at.technikum.apps.mtcg.repository;
 
+import at.technikum.apps.mtcg.data.Database;
 import at.technikum.apps.mtcg.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,61 +13,53 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class DatabaseUserRepositoryTest {
 /*
     @Mock
-    private Connection mockConnection;
+    private Database mockDatabase;
+
     @Mock
-    private PreparedStatement mockStatement;
+    private Connection mockConnection;
+
+    @Mock
+    private PreparedStatement mockPreparedStatement;
+
     @Mock
     private ResultSet mockResultSet;
 
-    private DatabaseUserRepository repository;
+    private DatabaseUserRepository databaseUserRepository;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws SQLException {
         MockitoAnnotations.initMocks(this);
-        repository = new DatabaseUserRepository(mockConnection);
+        when(mockDatabase.getConnection()).thenReturn(mockConnection);
+        when(mockConnection.prepareStatement(any(String.class))).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        databaseUserRepository = new DatabaseUserRepository(mockDatabase);
     }
-    public void testFind_ReturnsUser() throws Exception {
-        // Arrange
-        when(mockConnection.prepareStatement(anyString())).thenReturn(mockStatement);
-        when(mockStatement.executeQuery()).thenReturn(mockResultSet);
-        when(mockResultSet.next()).thenReturn(true); // Mocks return of one result
-        // Mock weitere ResultSet Methodenaufrufe, um eine User-Instanz zu erzeugen
 
-        // Act
-        Optional<User> result = repository.find("username");
+    @Test
+    public void testLogin() throws SQLException {
+        String username = "testUser";
+        String password = "testPassword";
+        when(mockResultSet.next()).thenReturn(true).thenReturn(false);
+        when(mockResultSet.getString("user_id")).thenReturn("1");
+        when(mockResultSet.getString("username")).thenReturn(username);
+        when(mockResultSet.getString("password")).thenReturn(password);
+        when(mockResultSet.getInt("elo")).thenReturn(100);
+        when(mockResultSet.getInt("coins")).thenReturn(20);
+        when(mockResultSet.getString("deck_id")).thenReturn("1");
+        when(mockResultSet.getString("bio")).thenReturn("bio");
+        when(mockResultSet.getString("image")).thenReturn("image");
+        when(mockResultSet.getString("name")).thenReturn("name");
 
-        // Assert
+        Optional<User> result = databaseUserRepository.login(username, password);
+
         assertTrue(result.isPresent());
-        // Weitere Assertions, um die Daten des Benutzers zu überprüfen
-    }
-    @Test
-    public void testSave_SavesUserSuccessfully() throws Exception {
-        // Arrange
-        User user = new User(); // Erstellen Sie eine User-Instanz mit entsprechenden Daten
-        when(mockConnection.prepareStatement(anyString())).thenReturn(mockStatement);
-        when(mockStatement.executeUpdate()).thenReturn(1);
-
-        // Act
-        repository.save(user);
-
-        // Assert
-        verify(mockStatement, times(1)).executeUpdate();
-        // Weitere Assertions, um zu überprüfen, ob die Daten korrekt in das PreparedStatement eingefügt wurden
-    }
-    @Test
-    public void testFind_ThrowsSQLException() throws Exception {
-        // Arrange
-        when(mockConnection.prepareStatement(anyString())).thenReturn(mockStatement);
-        when(mockStatement.executeQuery()).thenThrow(new SQLException());
-
-        // Act & Assert
-        assertThrows(DataAccessException.class, () -> repository.find("username"));
+        assertEquals(username, result.get().getUsername());
+        assertEquals(password, result.get().getPassword());
     }*/
 }

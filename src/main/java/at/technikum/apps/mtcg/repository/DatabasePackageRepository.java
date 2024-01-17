@@ -26,7 +26,6 @@ public class DatabasePackageRepository implements PackageRepository {
     private final Database database = Database.getInstance();
     private final CardRepository cardRepository = new DatabaseCardRepository();
 
-
     @Override
     public Package save(Package pkg) {
         try (
