@@ -10,22 +10,25 @@ public class Card {
     private int damage;
 
     private String packageId;
+
+    private String elementType;
     private String type;
 
     public Card(){
 
     }
 
-    public Card(String id, String name, int damage, String type) {
-        this(id,name, damage,null, type);
+    public Card(String id, String name, int damage, String elementType, String type) {
+        this(id,name, damage,null, elementType, type);
     }
 
 
-    public Card(String id, String name, int damage, String packageId, String type) {
+    public Card(String id, String name, int damage, String packageId, String elementType, String type) {
         this.id = id;
         this.name = name;
         this.damage = damage;
         this.packageId = packageId;
+        this.elementType = elementType;
         this.type = type;
     }
     public String getId() {
@@ -68,6 +71,13 @@ public class Card {
         this.type = type;
     }
 
+    public String getElementType(){
+        return elementType;
+    }
+
+    public void setElementType(String elementType){
+        this.elementType = elementType;
+    }
     @Override
     public String toString() {
         return "Card" + " " +

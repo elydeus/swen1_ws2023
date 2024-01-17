@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS cards
     name       VARCHAR(255) NOT NULL,
     damage     INT,
     package_id VARCHAR(255) REFERENCES packages (id) ON DELETE SET NULL,
+    elementType VARCHAR(255),
     type       VARCHAR(255)
 );
 
@@ -79,5 +80,7 @@ ALTER TABLE trades
 
 ALTER TABLE trades
     ADD COLUMN minDamage INT;
+
+
 
 DROP TABLE cards, packages, users, stacks, decks, deckcards, trades;

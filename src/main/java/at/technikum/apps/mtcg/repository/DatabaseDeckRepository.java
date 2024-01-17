@@ -23,6 +23,7 @@ public class DatabaseDeckRepository implements DeckRepository {
 
     private final String DO_CARDS_MATCH_USER = "SELECT COUNT(*) FROM stacks WHERE user_id = ? and card_id IN (?, ?, ?, ?)";
 
+    private final String IS_CARD_AVAILABLE_FOR_TRADE = "SELECT dealerCardId, customerCardId FROM trades WHERE dealerCardId = ? OR customerCardId = ?";
     private final String SAVE_CARDS_IN_DECK = "INSERT INTO deckcards(card_id, deck_id) VALUES (?, ?)";
     private final Database database = Database.getInstance();
 
@@ -156,5 +157,30 @@ public class DatabaseDeckRepository implements DeckRepository {
         } catch (SQLException e) {
             System.err.println("SQL Exception! Message: " + e.getMessage());
         }
+    }
+
+    @Override
+    public boolean isCardAvailableForTrade(String cardId) {
+        String dealerCardId = null;
+        String customerCardId = null;
+
+        try (
+                Connection con = database.getConnection();
+                PreparedStatement pstmt = con.prepareStatement(IS_CARD_AVAILABLE_FOR_TRADE)
+        ) {
+            pstmt.setString(1, cardId);
+            pstmt.setString(2, cardId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    dealerCardId = rs.getString("dealerCardId");
+                    customerCardId = rs.getString("customerCardId");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return dealerCardId != null || customerCardId != null;
     }
 }

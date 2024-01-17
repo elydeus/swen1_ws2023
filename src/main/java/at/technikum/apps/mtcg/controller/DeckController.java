@@ -29,10 +29,10 @@ public class DeckController extends AbstractController {
 
     private final DeckService deckService;
 
-    public DeckController() {
-        this.sessionService = new SessionService();
-        this.cardService = new CardService();
-        this.deckService = new DeckService();
+    public DeckController(SessionService sessionService, CardService cardService, DeckService deckService) {
+        this.sessionService = sessionService;
+        this.cardService = cardService;
+        this.deckService = deckService;
     }
 
     @Override
@@ -63,17 +63,17 @@ public class DeckController extends AbstractController {
         String deck_id = deckService.getDeck_Id(user_id);
 
         if (sessionService.isLoggedIn(token)) {
-            if(deck_id == null){
+            if (deck_id == null) {
                 Deck deck = new Deck();
                 deckService.save(deck, user_id);
             }
 
             List<String> cardsInDeck = deckService.findAll(deck_id);
 
-            if(request.getRoute().equals("/deck?format=plain")){
+            if (request.getRoute().equals("/deck?format=plain")) {
                 List<Card> cardPlain = new ArrayList<>();
                 String cards = "";
-                for (String id:cardsInDeck) {
+                for (String id : cardsInDeck) {
                     Card card = cardService.find(id);
                     cardPlain.add(card);
                     cards = cardPlain.toString();
@@ -90,12 +90,12 @@ public class DeckController extends AbstractController {
                 return internalServerError();
             }
             return json(HttpStatus.OK, deckJson);
-        }else{
+        } else {
             return notAllowed();
         }
     }
 
-    public Response configure(Request request){
+    public Response configure(Request request) {
 
         if (request.getContentType().equals("application/json")) {
 
@@ -105,32 +105,39 @@ public class DeckController extends AbstractController {
             String user_id = deckService.getUserId(username);
             String deck_id = deckService.getDeck_Id(user_id);
 
-            if(sessionService.isLoggedIn(token)){
+            if (sessionService.isLoggedIn(token)) {
 
                 List<String> cardsToBeSaved;
                 ObjectMapper objectMapper = new ObjectMapper();
 
                 try {
-                    cardsToBeSaved = objectMapper.readValue(request.getBody(), new TypeReference<List<String>>(){});
+                    cardsToBeSaved = objectMapper.readValue(request.getBody(), new TypeReference<List<String>>() {
+                    });
                 } catch (JsonProcessingException e) {
                     return badRequest();
                 }
 
-                if(cardsToBeSaved.size() != 4){
+                if (cardsToBeSaved.size() != 4) {
                     return json(HttpStatus.BAD_REQUEST, "Insufficient number of cards!");
                 }
 
-                if(!deckService.checkIfCardsMatchUser(cardsToBeSaved, user_id)){
+                if (!deckService.checkIfCardsMatchUser(cardsToBeSaved, user_id)) {
                     return json(HttpStatus.BAD_REQUEST, "Cards dont belong to user");
                 }
 
+                for (String id : cardsToBeSaved) {
+                    if (deckService.isCardAvailableForTrade(id)) {
+                        return notAllowed();
+                    }
+                }
+
                 List<String> cards = deckService.findAll(deck_id);
-                if(cards.isEmpty()){
+                if (cards.isEmpty()) {
                     deckService.saveCardsInDeck(cardsToBeSaved, deck_id);
                     return ok();
                 }
                 deckService.updateCardsInDeck(cardsToBeSaved, deck_id);
-            }else{
+            } else {
                 return notAllowed();
             }
         }

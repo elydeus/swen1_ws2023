@@ -3,6 +3,7 @@ package at.technikum.apps.mtcg.service;
 import at.technikum.apps.mtcg.entity.Card;
 import at.technikum.apps.mtcg.entity.User;
 import at.technikum.apps.mtcg.repository.DatabaseUserRepository;
+import at.technikum.apps.mtcg.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,10 +12,10 @@ import java.util.UUID;
 //service that lets you create and edit users
 public class UserService {
 
-    private final DatabaseUserRepository userRepository;
+    private final UserRepository userRepository;
 
-    public UserService(){
-        this.userRepository = new DatabaseUserRepository();
+    public UserService(UserRepository userRepository){
+        this.userRepository = userRepository;
     }
 
     public User findByUsername(String username){

@@ -7,6 +7,7 @@ import at.technikum.server.http.ContentType;
 import at.technikum.server.http.HttpStatus;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
+import at.technikum.apps.mtcg.service.Injector;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,15 +18,9 @@ public class MtcgApp implements ServerApplication {
     private List<AbstractController> controllers = new ArrayList<>();
 
     public MtcgApp() {
-        controllers.add(new CardController());
-        controllers.add(new UserController());
-        controllers.add(new SessionController());
-        controllers.add(new PackageController());
-        controllers.add(new TransactionController());
-        controllers.add(new DeckController());
-        controllers.add(new StatsController());
-        controllers.add(new ScoreboardController());
-        controllers.add(new TradingController());
+        Injector injector = new Injector();
+
+        this.controllers = injector.createController();
     }
 
     @Override
