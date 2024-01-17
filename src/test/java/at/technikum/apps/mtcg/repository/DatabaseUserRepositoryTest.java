@@ -4,6 +4,7 @@ import at.technikum.apps.mtcg.data.Database;
 import at.technikum.apps.mtcg.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -13,11 +14,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 public class DatabaseUserRepositoryTest {
-/*
+
     @Mock
     private Database mockDatabase;
 
@@ -30,6 +33,7 @@ public class DatabaseUserRepositoryTest {
     @Mock
     private ResultSet mockResultSet;
 
+    @InjectMocks
     private DatabaseUserRepository databaseUserRepository;
 
     @BeforeEach
@@ -38,28 +42,48 @@ public class DatabaseUserRepositoryTest {
         when(mockDatabase.getConnection()).thenReturn(mockConnection);
         when(mockConnection.prepareStatement(any(String.class))).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
-        databaseUserRepository = new DatabaseUserRepository(mockDatabase);
     }
 
     @Test
-    public void testLogin() throws SQLException {
+    public void testLoginFail() throws SQLException {
+        String username = "wrongUser";
+        String password = "wrongPassword";
+        when(mockResultSet.next()).thenReturn(false);
+
+        Optional<User> result = databaseUserRepository.login(username, databaseUserRepository.securePassword(password));
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testSave() throws SQLException {
+        User player = new User("1", "testUser", "testPassword", 100, 20, "bio", "image", "name");
+
+        User result = databaseUserRepository.save(player);
+
+        assertEquals(player, result);
+    }
+
+    @Test
+    public void testUpdate() throws SQLException {
+        User player = new User("1", "testUser", "testPassword", 100, 20, "bio", "image", "name");
+        String name = "newName";
+
+        User result = databaseUserRepository.update(player, name);
+
+        assertEquals(player, result);
+    }
+
+    @Test
+    public void testFindStats() throws SQLException {
         String username = "testUser";
-        String password = "testPassword";
-        when(mockResultSet.next()).thenReturn(true).thenReturn(false);
-        when(mockResultSet.getString("user_id")).thenReturn("1");
-        when(mockResultSet.getString("username")).thenReturn(username);
-        when(mockResultSet.getString("password")).thenReturn(password);
-        when(mockResultSet.getInt("elo")).thenReturn(100);
-        when(mockResultSet.getInt("coins")).thenReturn(20);
-        when(mockResultSet.getString("deck_id")).thenReturn("1");
-        when(mockResultSet.getString("bio")).thenReturn("bio");
-        when(mockResultSet.getString("image")).thenReturn("image");
-        when(mockResultSet.getString("name")).thenReturn("name");
+        int elo = 100;
 
-        Optional<User> result = databaseUserRepository.login(username, password);
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getInt("points")).thenReturn(elo);
 
-        assertTrue(result.isPresent());
-        assertEquals(username, result.get().getUsername());
-        assertEquals(password, result.get().getPassword());
-    }*/
+        int result = databaseUserRepository.getStats(username);
+
+        assertEquals(elo, result);
+    }
 }

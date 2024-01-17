@@ -118,11 +118,11 @@ public class DeckController extends AbstractController {
                 }
 
                 if (cardsToBeSaved.size() != 4) {
-                    return json(HttpStatus.BAD_REQUEST, "Insufficient number of cards!");
+                    return json(HttpStatus.BAD_REQUEST, "@Console: Size of cards to be saved is illegal");
                 }
 
                 if (!deckService.checkIfCardsMatchUser(cardsToBeSaved, user_id)) {
-                    return json(HttpStatus.BAD_REQUEST, "Cards dont belong to user");
+                    return json(HttpStatus.BAD_REQUEST, "@Console: Cards do not belong to user!");
                 }
 
                 for (String id : cardsToBeSaved) {

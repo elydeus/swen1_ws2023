@@ -58,7 +58,7 @@ public class TransactionController extends AbstractController{
                     String package_id = packageService.getIdFromPackage();
 
                     if(package_id == null){
-                        return json(HttpStatus.NOT_FOUND, "No more packages available for purchase!");
+                        return json(HttpStatus.NOT_FOUND, "@Console: No more packages available for purchase!");
                     }
                     List<String> cardsInPackage = packageService.getCardsFromPackage(package_id);
 
@@ -71,7 +71,7 @@ public class TransactionController extends AbstractController{
 
                     return ok();
                 }else{
-                    return json(HttpStatus.BAD_REQUEST, "User has no coins!");
+                    return json(HttpStatus.BAD_REQUEST, "@Console: User is out of coins!");
                 }
             }else{
                 return notAllowed();

@@ -71,7 +71,7 @@ public class TradingController extends AbstractController{
             if (sessionService.isLoggedIn(token)) {
 
                 if (checkIfSelf.equals(user_id)) {
-                    return json(HttpStatus.NOT_ALLOWED, "Can't trade with yourself!");
+                    return json(HttpStatus.NOT_ALLOWED, "@Console: You are not able to trade with urself!");
                 }
 
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -86,14 +86,14 @@ public class TradingController extends AbstractController{
                 Trade trade = tradingService.getSpecificTrade(trade_id);
 
                 if (tradingService.checkIfCardIsInDeck(cardId)) {
-                    return json(HttpStatus.NOT_ALLOWED, "Card can't be in Deck!");
+                    return json(HttpStatus.NOT_ALLOWED, "@Console: Card is not allowed to be in a Deck");
                 }
 
                 int damage = tradingService.getDamageFromCard(cardId);
                 String type = tradingService.getTypeFromCard(cardId);
 
                 if (damage < trade.getMinimumDamage() || (!type.equalsIgnoreCase(trade.getType()))) {
-                    return json(HttpStatus.NOT_ALLOWED, "Card is not matching the minimum requirements for this trade!");
+                    return json(HttpStatus.NOT_ALLOWED, "@Console: Some requirements were not met");
                 }
 
                 tradeToBeUpdated = tradingService.updateTrade(trade, trade_id, user_id, cardId);
@@ -128,7 +128,7 @@ public class TradingController extends AbstractController{
             } catch(Exception e){
                 return internalServerError();
             }
-            return json(HttpStatus.OK, "Trade deleted!");
+            return json(HttpStatus.OK, "@Console: Trade was deleted!");
         }else{
             return notAllowed();
         }
@@ -175,7 +175,7 @@ public class TradingController extends AbstractController{
                 }
 
                 if(tradingService.checkIfCardIsInDeck(trade.getDealerCardId())){
-                    return json(HttpStatus.NOT_ALLOWED, "Card is in Deck!");
+                    return json(HttpStatus.NOT_ALLOWED, "@Console: Card is in a Deck!");
                 }
 
                 trade = tradingService.saveTrade(trade, user_id);

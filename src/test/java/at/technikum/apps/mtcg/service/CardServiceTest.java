@@ -1,10 +1,7 @@
 package at.technikum.apps.mtcg.service;
 
-
 import at.technikum.apps.mtcg.entity.Card;
-import at.technikum.apps.mtcg.entity.User;
 import at.technikum.apps.mtcg.repository.CardRepository;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,11 +14,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CardServiceTest {
+public class CardServiceTest {
 
     @Mock
     private CardRepository cardRepository;
@@ -29,34 +26,31 @@ class CardServiceTest {
     @InjectMocks
     private CardService cardService;
 
-    private String userId;
-
+    private String playerId;
     private List<Card> cards;
 
     @BeforeEach
-    public void setUp(){
-        userId = "test";
-        cards = Arrays.asList(new Card(),new Card(),new Card());
-    }
-    @Test
-    void testFindAll() {
-
+    public void setUp() {
+        playerId = "testPlayerId";
+        cards = Arrays.asList(new Card(), new Card(), new Card());
     }
 
     @Test
-    void find() {
+    public void testFindAll() {
+        when(cardRepository.findAllCardsByUser(playerId)).thenReturn(cards);
+
+        List<Card> result = cardService.findAllCardsByUser(playerId);
+
+        assertEquals(cards, result);
     }
 
     @Test
-    void save() {
-    }
+    public void testSaveCard() {
+        Card card = new Card("1", "Goblin", 10, "Normal", "Monster");
+        when(cardRepository.save(card)).thenReturn(card);
 
-    @Test
-    void findAllCardsByUser() {
+        Card result = cardService.save(card);
 
-        when(cardRepository.findAll()).thenReturn(cards);
-
-        List<Card> result = cardService.findAll();
-        assertEquals(cards,result);
+        assertEquals(card, result);
     }
 }

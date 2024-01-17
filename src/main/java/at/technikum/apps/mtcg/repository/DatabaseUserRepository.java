@@ -98,7 +98,7 @@ public class DatabaseUserRepository implements UserRepository {
 
     }
 
-    private String securePassword(String password) {
+    public String securePassword(String password) {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("MD5");
 
