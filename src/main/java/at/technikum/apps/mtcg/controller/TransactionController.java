@@ -70,7 +70,7 @@ public class TransactionController extends AbstractController{
 
                     return ok(HttpStatus.OK);
                 }else{
-                    return badRequest(HttpStatus.BAD_REQUEST);
+                    return json(HttpStatus.BAD_REQUEST, "User has no coins!");
                 }
             }else{
                 return notAllowed(HttpStatus.NOT_ALLOWED);

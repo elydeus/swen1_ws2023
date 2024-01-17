@@ -4,6 +4,7 @@ import at.technikum.server.http.ContentType;
 import at.technikum.server.http.HttpStatus;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
+import com.sun.nio.file.SensitivityWatchEventModifier;
 
 public class DeckController implements Controller{
 
@@ -14,11 +15,14 @@ public class DeckController implements Controller{
 
     @Override
     public Response handle(Request request) {
-        Response response = new Response();
-        response.setStatus(HttpStatus.OK);
-        response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody("deck controller");
-
-        return response;
+        if (supports(request.getRoute())) {
+            switch(request.getMethod()){
+                case "PUT":
+                case "GET":
+            }
+            //return notAllowed(HttpStatus.NOT_ALLOWED);
+        }
+        //return notAllowed(HttpStatus.NOT_ALLOWED);
+        return null;
     }
 }
