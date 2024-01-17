@@ -13,8 +13,8 @@ public class UserService {
 
     private final DatabaseUserRepository userRepository;
 
-    public UserService(DatabaseUserRepository userRepository){
-        this.userRepository = userRepository;
+    public UserService(){
+        this.userRepository = new DatabaseUserRepository();
     }
 
     public User findByUsername(String username){
@@ -41,6 +41,9 @@ public class UserService {
         return checkUser;
     }
 
+    public String getUserId(String username){
+        return userRepository.getUserId(username);
+    }
     public int findStats(String username){
         return userRepository.findStats(username);
     }

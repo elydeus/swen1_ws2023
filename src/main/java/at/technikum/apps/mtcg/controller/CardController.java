@@ -2,6 +2,8 @@ package at.technikum.apps.mtcg.controller;
 
 import at.technikum.apps.mtcg.entity.Card;
 import at.technikum.apps.mtcg.service.CardService;
+import at.technikum.apps.mtcg.service.SessionService;
+import at.technikum.apps.mtcg.service.UserService;
 import at.technikum.server.http.ContentType;
 import at.technikum.server.http.HttpStatus;
 import at.technikum.server.http.Request;
@@ -14,8 +16,13 @@ public class CardController extends AbstractController {
 
     private final CardService cardService;
 
+    private final UserService userService;
+    private final SessionService sessionService;
+
     public CardController() {
         this.cardService = new CardService();
+        this.userService = new UserService();
+        this.sessionService = new SessionService();
     }
 
     @Override
