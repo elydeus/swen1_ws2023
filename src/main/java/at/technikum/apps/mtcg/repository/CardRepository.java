@@ -13,4 +13,5 @@ public interface CardRepository {
 
     Card save(Card card);
 
+    List<Card> findAllCardsByUser(String user_id);
 }

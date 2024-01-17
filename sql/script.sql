@@ -51,4 +51,4 @@ ALTER TABLE users ADD COLUMN image VARCHAR(20) DEFAULT NULL;
 ALTER TABLE users ADD COLUMN name VARCHAR(20) DEFAULT NULL;
 
 
-DROP TABLE cards, packages, users, stacks, decks, deckcards
+DROP TABLE cards, packages, users, stacks, decks, deckcards;

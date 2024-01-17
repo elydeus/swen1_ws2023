@@ -24,5 +24,5 @@ public interface UserRepository {
     List<Integer> sortedEloList();
     String findUserString(String username);
 
-
+    String getUserId(String username);
 }

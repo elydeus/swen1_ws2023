@@ -4,6 +4,7 @@ import at.technikum.apps.mtcg.entity.Card;
 import at.technikum.apps.mtcg.entity.User;
 import at.technikum.apps.mtcg.repository.DatabaseUserRepository;
 import at.technikum.apps.mtcg.service.CardService;
+import at.technikum.apps.mtcg.service.SessionService;
 import at.technikum.apps.mtcg.service.UserService;
 import at.technikum.server.http.ContentType;
 import at.technikum.server.http.HttpStatus;
@@ -20,10 +21,12 @@ import java.util.ResourceBundle;
 public class UserController extends AbstractController {
 
     private final UserService userService;
+    private final SessionService sessionService;
 
 
     public UserController() {
-        this.userService = new UserService(new DatabaseUserRepository());
+        this.userService = new UserService();
+        this.sessionService = new SessionService();
     }
 
     @Override

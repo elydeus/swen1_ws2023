@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +22,7 @@ public class DatabaseUserRepository implements UserRepository {
     private final String GET_ELO_SQL = "SELECT elo FROM users WHERE username = ?";
     private final String GET_ALL_ELO_SQL = "SELECT elo FROM users";
     private final String TOKEN_SQL = "SELECT username FROM users WHERE username = ?";
+    private final String GET_USER_ID = "SELECT id FROM users WHERE username = ?";
     private final Database database = Database.getInstance();
 
 
@@ -91,6 +93,32 @@ public class DatabaseUserRepository implements UserRepository {
             System.err.println("SQL Exception! Message: " + e.getMessage());
         }
         return user;
+    }
+
+    @Override
+    public String getUserId(String username) {
+        String id = null;
+
+        try (
+                Connection con = database.getConnection();
+                PreparedStatement pstmt = con.prepareStatement(GET_USER_ID)
+        ) {
+            pstmt.setString(1, username);
+            try (ResultSet rs = pstmt.executeQuery()){
+                if(rs.next()){
+                    id = rs.getString("id");
+                }
+            }
+        }catch (SQLException e){
+            System.err.println("SQL Exception! Message: " + e.getMessage());
+        }
+        return id;
+
+    }
+
+    public String securePassword(String password){
+        Base64.Encoder encoder = Base64.getEncoder();
+        return encoder.encodeToString(password.getBytes());
     }
 
     @Override
