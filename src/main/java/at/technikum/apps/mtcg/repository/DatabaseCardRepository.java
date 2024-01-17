@@ -14,8 +14,12 @@ import java.util.Optional;
 public class DatabaseCardRepository implements CardRepository {
 
     private final String FIND_ALL_SQL = "SELECT * FROM cards";
-    private final String SAVE_SQL = "INSERT INTO cards(id, name, damage, package_id) VALUES(?, ?, ?, ?)";
-    private final String FIND_ALL_CARDS_BY_USER = "SELECT c.id, c.name, c.damage, c.package_id FROM stack s JOIN card c ON s.card_id = c.id WHERE s.user_id = ?";
+
+    private final String FIND_CARD = "SELECT * FROM cards where id = ?";
+    private final String SAVE = "INSERT INTO cards(id, name, damage, package_id, type) VALUES(?, ?, ?, ?, ?)";
+
+    private final String FIND_ALL_CARDS_BY_USER = "SELECT c.id, c.name, c.damage, c.package_id, c.type FROM stacks s JOIN cards c ON s.card_id = c.id WHERE s.user_id = ?";
+
     private final Database database = Database.getInstance();
 
 
@@ -32,36 +36,58 @@ public class DatabaseCardRepository implements CardRepository {
                 Card card = new Card(
                         rs.getString("id"),
                         rs.getString("name"),
-                        rs.getString("damage"),
-                        rs.getString("package_id")
+                        rs.getInt("damage"),
+                        rs.getString("package_id"),
+                        rs.getString("type")
                 );
                 cards.add(card);
             }
-
-            return cards;
         } catch (SQLException e) {
-            return cards;
+            System.err.println("SQL Exception! Message: " + e.getMessage());
         }
+        return cards;
     }
 
     @Override
-    public Optional<Card> find(int id) {
-        return Optional.empty();
+    public Card find(String id) {
+        Card card = new Card();
+        try (
+                Connection con = database.getConnection();
+                PreparedStatement pstmt = con.prepareStatement(FIND_CARD);
+        ) {
+            pstmt.setString(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next()) {
+                card.setId(rs.getString("id"));
+                card.setName(rs.getString("name"));
+                card.setDamage(rs.getInt("damage"));
+                card.setPackageId(rs.getString("package_id"));
+                card.setType(rs.getString("type"));
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL Exception! Message: " + e.getMessage());
+        }
+        return card;
     }
 
     @Override
     public Card save(Card card) {
         try (
                 Connection con = database.getConnection();
-                PreparedStatement pstmt = con.prepareStatement(SAVE_SQL)
+                PreparedStatement pstmt = con.prepareStatement(SAVE)
         ) {
             pstmt.setString(1, card.getId());
             pstmt.setString(2, card.getName());
-            pstmt.setString(3, card.getDamage());
+            pstmt.setInt(3, card.getDamage());
             pstmt.setString(4, card.getPackageId());
+            if(card.getName().contains("Spell")){
+                pstmt.setString(5, "Spell");
+            }else{
+                pstmt.setString(5, "Monster");
+            }
             pstmt.execute();
         } catch (SQLException e) {
-            // THOUGHT: how do i handle exceptions (hint: look at the TaskApp)
+            System.err.println("SQL Exception! Message: " + e.getMessage());
         }
 
         return card;
@@ -69,7 +95,7 @@ public class DatabaseCardRepository implements CardRepository {
 
     @Override
     public List<Card> findAllCardsByUser(String user_id) {
-        List<Card> cardsByUser = new ArrayList<>();
+        List<Card> cardsFromUser = new ArrayList<>();
         try (
                 Connection con = database.getConnection();
                 PreparedStatement pstmt = con.prepareStatement(FIND_ALL_CARDS_BY_USER)
@@ -80,17 +106,16 @@ public class DatabaseCardRepository implements CardRepository {
                     Card card = new Card(
                             rs.getString("id"),
                             rs.getString("name"),
-                            rs.getString("damage"),
-                            rs.getString("package_id")
+                            rs.getInt("damage"),
+                            rs.getString("package_id"),
+                            rs.getString("type")
                     );
-                    cardsByUser.add(card);
+                    cardsFromUser.add(card);
                 }
             }
         } catch (SQLException e) {
             System.err.println("SQL Exception! Message: " + e.getMessage());
         }
-        return cardsByUser;
+        return cardsFromUser;
     }
     }
-
-}

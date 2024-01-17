@@ -1,9 +1,12 @@
 package at.technikum.apps.mtcg.service;
 
+import at.technikum.apps.mtcg.data.Database;
 import at.technikum.apps.mtcg.entity.Card;
 import at.technikum.apps.mtcg.repository.DatabaseCardRepository;
 import at.technikum.apps.mtcg.repository.CardRepository;
 
+import javax.xml.crypto.Data;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,6 +16,7 @@ public class CardService {
 
     private final CardRepository cardRepository;
 
+    private final Database database = Database.getInstance();
     public CardService() {
         this.cardRepository = new DatabaseCardRepository();
     }
@@ -21,8 +25,8 @@ public class CardService {
         return cardRepository.findAll();
     }
 
-    public Optional<Card> find(int id) {
-        return Optional.empty();
+    public Card find(String id) {
+        return cardRepository.find(id);
     }
 
     public Card save(Card card) {

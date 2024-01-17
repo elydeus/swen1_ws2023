@@ -15,37 +15,17 @@ import java.util.Optional;
 //handles the communication with the user database
 public class DatabaseUserRepository implements UserRepository {
 
-    private final String FIND_BY_USERNAME = "SELECT username FROM users WHERE username = ?";
+    private final String FIND_BY_USERNAME = "SELECT * FROM users WHERE username = ?";
     private final String FIND_BY_USERNAME_AND_PASSWORD = "SELECT * FROM users WHERE username = ? AND password = ?";
     private final String SAVE = "INSERT INTO users(id, username, password, elo, coins, bio, image, name) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
     private final String UPDATE = "UPDATE users SET bio = ?, image = ?, name = ? WHERE username = ?";
     private final String GET_ELO_SQL = "SELECT elo FROM users WHERE username = ?";
     private final String GET_ALL_ELO_SQL = "SELECT elo FROM users";
-    private final String TOKEN_SQL = "SELECT username FROM users WHERE username = ?";
     private final String GET_USER_ID = "SELECT id FROM users WHERE username = ?";
     private final Database database = Database.getInstance();
 
 
-    @Override
-    public boolean isValid(String username) {
-        String foundUsername = null;
 
-        try (
-                Connection con = database.getConnection();
-                PreparedStatement pstmt = con.prepareStatement(TOKEN_SQL);
-        ) {
-            pstmt.setString(1, username);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    foundUsername = rs.getString("username");
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return foundUsername != null;
-    }
 
 
     @Override
@@ -130,7 +110,7 @@ public class DatabaseUserRepository implements UserRepository {
                 PreparedStatement pstmt = con.prepareStatement(FIND_BY_USERNAME_AND_PASSWORD);
         ) {
             pstmt.setString(1, username);
-            pstmt.setString(2, password);
+            pstmt.setString(2, securePassword(password));
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
@@ -159,7 +139,7 @@ public class DatabaseUserRepository implements UserRepository {
         ) {
             pstmt.setString(1, user.getId());
             pstmt.setString(2, user.getUsername());
-            pstmt.setString(3, user.getPassword());
+            pstmt.setString(3, securePassword(user.getPassword()));
             pstmt.setInt(4, 100);
             pstmt.setInt(5, 20);
             pstmt.setString(6, user.getBio());
@@ -196,7 +176,7 @@ public class DatabaseUserRepository implements UserRepository {
     }
 
     @Override
-    public int findStats(String username) {
+    public int getStats(String username) {
 
         int stats = 0;
         try (
@@ -215,7 +195,9 @@ public class DatabaseUserRepository implements UserRepository {
         return stats;
     }
 
-    public List<Integer> sortedEloList() {
+
+
+    public List<Integer> getScoreboard() {
         List<Integer> list = new ArrayList<>();
         try (
                 Connection con = database.getConnection();

@@ -1,5 +1,7 @@
 package at.technikum.apps.mtcg.controller;
 
+import at.technikum.apps.mtcg.entity.Card;
+import at.technikum.apps.mtcg.service.*;
 import at.technikum.server.http.ContentType;
 import at.technikum.server.http.HttpStatus;
 import at.technikum.server.http.Request;
@@ -8,10 +10,6 @@ import com.sun.nio.file.SensitivityWatchEventModifier;
 
 import at.technikum.apps.mtcg.entity.Deck;
 import at.technikum.apps.mtcg.entity.User;
-import at.technikum.apps.mtcg.service.DeckService;
-import at.technikum.apps.mtcg.service.PackageService;
-import at.technikum.apps.mtcg.service.SessionService;
-import at.technikum.apps.mtcg.service.StackService;
 import at.technikum.server.http.HttpStatus;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
@@ -20,26 +18,26 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DeckController extends AbstractController {
 
     private final SessionService sessionService;
-
-    private final PackageService packageService;
+    private final CardService cardService;
 
     private final DeckService deckService;
 
     public DeckController() {
         this.sessionService = new SessionService();
-        this.packageService = new PackageService();
+        this.cardService = new CardService();
         this.deckService = new DeckService();
     }
 
     @Override
     public boolean supports(String route) {
-        return route.equals("/deck");
+        return route.startsWith("/deck");
     }
 
     @Override
@@ -51,9 +49,9 @@ public class DeckController extends AbstractController {
                 case "PUT":
                     return configure(request);
             }
-            return notAllowed(HttpStatus.NOT_ALLOWED);
+            return notAllowed();
         }
-        return notAllowed(HttpStatus.NOT_ALLOWED);
+        return notAllowed();
     }
 
     public Response readAll(Request request) {
@@ -67,10 +65,21 @@ public class DeckController extends AbstractController {
         if (sessionService.isLoggedIn(token)) {
             if(deck_id == null){
                 Deck deck = new Deck();
-                deckService.save(deck, user_id);//TODO DeckService save erstellen und hier das Deck saven
+                deckService.save(deck, user_id);
             }
 
-            List<String> cardsInDeck = deckService.findAll(deck_id); //TODO DeckService findAll erstellen
+            List<String> cardsInDeck = deckService.findAll(deck_id);
+
+            if(request.getRoute().equals("/deck?format=plain")){
+                List<Card> cardPlain = new ArrayList<>();
+                String cards = "";
+                for (String id:cardsInDeck) {
+                    Card card = cardService.find(id);
+                    cardPlain.add(card);
+                    cards = cardPlain.toString();
+                }
+                return json(HttpStatus.OK, cards.replace("[", "").replace("]", "").replace(",", ""));
+            }
 
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -78,11 +87,11 @@ public class DeckController extends AbstractController {
             try {
                 deckJson = objectMapper.writeValueAsString(cardsInDeck);
             } catch (JsonProcessingException e) {
-                return internalServerError(HttpStatus.INTERNAL_SERVER_ERROR);
+                return internalServerError();
             }
             return json(HttpStatus.OK, deckJson);
         }else{
-            return notAllowed(HttpStatus.NOT_ALLOWED);
+            return notAllowed();
         }
     }
 
@@ -104,27 +113,27 @@ public class DeckController extends AbstractController {
                 try {
                     cardsToBeSaved = objectMapper.readValue(request.getBody(), new TypeReference<List<String>>(){});
                 } catch (JsonProcessingException e) {
-                    return badRequest(HttpStatus.BAD_REQUEST);
+                    return badRequest();
                 }
 
                 if(cardsToBeSaved.size() != 4){
                     return json(HttpStatus.BAD_REQUEST, "Insufficient number of cards!");
                 }
 
-                if(deckService.checkIfCardsMatchUser(cardsToBeSaved, user_id)){
+                if(!deckService.checkIfCardsMatchUser(cardsToBeSaved, user_id)){
                     return json(HttpStatus.BAD_REQUEST, "Cards dont belong to user");
                 }
 
                 List<String> cards = deckService.findAll(deck_id);
                 if(cards.isEmpty()){
                     deckService.saveCardsInDeck(cardsToBeSaved, deck_id);
-                    return ok(HttpStatus.OK);
+                    return ok();
                 }
                 deckService.updateCardsInDeck(cardsToBeSaved, deck_id);
             }else{
-                return notAllowed(HttpStatus.NOT_ALLOWED);
+                return notAllowed();
             }
         }
-        return ok(HttpStatus.OK);
+        return ok();
     }
 }

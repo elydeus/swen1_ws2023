@@ -21,10 +21,6 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public boolean isValid(String username){
-        return userRepository.isValid(username);
-    }
-
     public User update(User updatedUser, String username){
         return userRepository.update(updatedUser, username);
     }
@@ -44,12 +40,12 @@ public class UserService {
     public String getUserId(String username){
         return userRepository.getUserId(username);
     }
-    public int findStats(String username){
-        return userRepository.findStats(username);
+    public int getStats(String username){
+        return userRepository.getStats(username);
     }
 
-    public List<Integer> sortedEloList(){
-        return userRepository.sortedEloList();
+    public List<Integer> getScoreboard(){
+        return userRepository.getScoreboard();
     }
 
     public String findUserString(String username){

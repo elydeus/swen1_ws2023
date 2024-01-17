@@ -8,6 +8,7 @@ import at.technikum.server.http.HttpStatus;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class TransactionController extends AbstractController{
@@ -18,7 +19,7 @@ public class TransactionController extends AbstractController{
 
     private final StackService stackService;
 
-    public TransactionController() {
+    public TransactionController()  {
         this.sessionService = new SessionService();
         this.packageService = new PackageService();
         this.stackService = new StackService();
@@ -35,9 +36,9 @@ public class TransactionController extends AbstractController{
             if (request.getMethod().equals("POST")) {
                 return buyPackage(request);
             }
-            return notAllowed(HttpStatus.NOT_ALLOWED);
+            return notAllowed();
         }
-        return notAllowed(HttpStatus.NOT_ALLOWED);
+        return notAllowed();
     }
 
     public Response buyPackage(Request request){
@@ -68,15 +69,15 @@ public class TransactionController extends AbstractController{
                     packageService.updateCoins(username, costs);
                     packageService.delete(package_id);
 
-                    return ok(HttpStatus.OK);
+                    return ok();
                 }else{
                     return json(HttpStatus.BAD_REQUEST, "User has no coins!");
                 }
             }else{
-                return notAllowed(HttpStatus.NOT_ALLOWED);
+                return notAllowed();
             }
         }
-        return badRequest(HttpStatus.BAD_REQUEST);
+        return badRequest();
     }
 
 }

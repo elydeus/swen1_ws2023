@@ -8,6 +8,7 @@ import at.technikum.server.http.HttpStatus;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,12 +17,14 @@ public class MtcgApp implements ServerApplication {
     private List<AbstractController> controllers = new ArrayList<>();
 
     public MtcgApp() {
-        controllers.add(new SessionController());
-        controllers.add(new UserController());
         controllers.add(new CardController());
+        controllers.add(new UserController());
+        controllers.add(new SessionController());
         controllers.add(new PackageController());
         controllers.add(new TransactionController());
         controllers.add(new DeckController());
+        controllers.add(new StatsController());
+        controllers.add(new ScoreboardController());
     }
 
     @Override

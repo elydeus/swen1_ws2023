@@ -11,6 +11,7 @@ import at.technikum.server.http.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,20 +37,20 @@ public class CardController extends AbstractController {
     public Response handle(Request request) {
         if (request.getRoute().equals("/cards")) {
             if (!isLoggedIn(request)){
-                return unauthorized(HttpStatus.UNAUTHORIZED);
+                return unauthorized();
             }
             if (request.getMethod().equals("GET")) {
                 return read(request);
             }
 
             // THOUGHT: better 405
-            return notAllowed(HttpStatus.NOT_ALLOWED);
+            return notAllowed();
         }
 
         // get id e.g. from /tasks/1
 
         // THOUGHT: better 405
-        return notAllowed(HttpStatus.NOT_ALLOWED);
+        return notAllowed();
     }
 
     public Response readAll(Request request) {
@@ -85,7 +86,7 @@ public class CardController extends AbstractController {
 
 
         }
-        return badRequest(HttpStatus.BAD_REQUEST);
+        return badRequest();
     }
 
     public Response update(int id, Request request) {

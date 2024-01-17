@@ -13,11 +13,13 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.pbkdf2.Pack;
 
+import java.sql.SQLException;
 import java.util.Set;
 
 public class PackageController extends AbstractController{
 
     private final PackageService packageService = new PackageService();
+
     @Override
     public boolean supports(String route) {
         return route.startsWith("/packages");
@@ -28,12 +30,12 @@ public class PackageController extends AbstractController{
         if (request.getMethod().equals("POST")){
             return createPackage(request);
         }
-        return notAllowed(HttpStatus.NOT_ALLOWED);
+        return notAllowed();
     }
 
     public Response createPackage(Request request){
         if (!isLoggedInAsAdmin(request)){
-            return unauthorized(HttpStatus.UNAUTHORIZED);
+            return unauthorized();
         }
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
@@ -45,7 +47,7 @@ public class PackageController extends AbstractController{
             return json(HttpStatus.CREATED, pkgJson);
         } catch (JsonProcessingException e) {
             System.out.println(e);
-            return badRequest(HttpStatus.BAD_REQUEST);
+            return badRequest();
         }
     }
 }

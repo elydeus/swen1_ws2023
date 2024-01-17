@@ -11,17 +11,15 @@ public interface UserRepository {
 
     Optional<User> login(String username, String password);
 
-    boolean isValid(String username);
-
     User findByUsername(String username);
 
     User save(User user);
 
     User update(User user, String username);
 
-    int findStats(String username);
+    int getStats(String username);
 
-    List<Integer> sortedEloList();
+    List<Integer> getScoreboard();
     String findUserString(String username);
 
     String getUserId(String username);
